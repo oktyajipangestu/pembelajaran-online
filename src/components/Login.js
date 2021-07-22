@@ -34,9 +34,11 @@ const Login = () => {
       })
         .then((res) => res.json())
         .then((hasil) => {
-          console.log(hasil.token);
-          localStorage.setItem("dataLoginAdmin", hasil.token);
-          history.push("/list-video-admin");
+          if(hasil.status === 'berhasil') {
+            localStorage.setItem("dataLoginAdmin", hasil.token);
+            history.push("/list-video-admin");
+          }
+
         })
         .catch((err) => {
             alert(err);

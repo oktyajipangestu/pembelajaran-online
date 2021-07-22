@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import ReactPlayer from 'react-player';
 import swal from "sweetalert";
+import { useHistory } from "react-router-dom";
 
 const ListVideo = () => {
+  const history = useHistory();
   const [dataListVideo, setDataListVideo] = useState([]);
   const [handleShowVideo, setHandleShowVideo] = useState(false);
   const [linkVideo, setLinkVideo] = useState('');
@@ -13,17 +15,27 @@ const ListVideo = () => {
   const [linkTumbnail, setLinkTumbnail] = useState('');
   const [linkVideoUpload, setLinkVideoUpload] = useState('');
   const [showDelete, setShowDelete] = useState(false);
+  const [idDel, setIdDel] = useState('');
+  const [showEdit, setShowEdit] = useState(false);
+  const [idUpdate, setIdUpdate] = useState('');
   
   const handleClose = () => {
     setHandleShowVideo(false);
     setShowDelete(false);
   }
 
-  const handleShow = () => {
+  const handleShow = (id) => {
     setShowDelete(true);
+    setIdDel(id);
   }
 
+  console.log(idDel);
+
   useEffect(() => {
+    const login = localStorage.getItem('dataLoginAdmin');
+    if(!login){
+      history.push('/login-admin');
+    }
     getData();
   }, []);
 
@@ -91,7 +103,6 @@ const ListVideo = () => {
     })
   }
 
-
   const clearState = () => {
     setJudul('');
     setKeterangan('');
@@ -99,11 +110,80 @@ const ListVideo = () => {
     setLinkVideoUpload('');
   }
 
+  const handleDelete = () => {
+    const token = localStorage.getItem('dataLoginAdmin');
+    const dataSend = {
+      id_konten: idDel,
+      token: token
+    }
+
+    fetch(`${process.env.REACT_APP_API}/hapusKonten`, {
+      method: 'POST',
+      body: JSON.stringify(dataSend),
+      headers: {
+        'Content-Type' : 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(hasil => {
+      getData();
+      setShowDelete(false);
+      swal('Success', 'Data Berhasil dihapus', 'success');
+    })
+  }
+
+  const handleShowEdit = (data) => {
+    setShowEdit(true);
+    setIdUpdate(data.id_konten);
+    setJudul(data.judul);
+    setKeterangan(data.keterangan);
+    setLinkTumbnail(data.link_thumbnail);
+    setLinkVideoUpload(data.link_video); 
+  }
+
+  const handleUpdateSimpan = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('dataLoginAdmin');
+    const dataSend = {
+      id_konten: idUpdate,
+      judul: judul,
+      keterangan: keterangan,
+      link_thumbnail: linkTumbnail,
+      link_video: linkVideoUpload,
+      token: token
+    }
+    fetch(`${process.env.REACT_APP_API}/ubahKonten`, {
+      method: 'POST',
+      body: JSON.stringify(dataSend),
+      headers: {
+        'Content-Type' : 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(hasil => {
+      console.log(hasil);
+      if(hasil.status === 'berhasil') {
+        getData();
+        clearState();
+        setShowEdit(false);
+        swal('success', hasil.message, 'success');
+      } else {
+        clearState();
+        swal('failed', hasil.message, 'error');
+      }
+    })
+    .catch((err) => {
+      clearState();
+      alert(err);
+    });
+  }
+
+
   return (
     <>
       <Modal show={handleShowVideo} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>{judul}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
@@ -131,7 +211,7 @@ const ListVideo = () => {
             Close
           </Button>
           <Button variant="primary" onClick={handleClose}>
-            Save Changes
+            Simpan
           </Button>
         </Modal.Footer>
       </Modal>
@@ -199,10 +279,61 @@ const ListVideo = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+          <Button variant="danger" onClick={handleDelete}>
+            Hapus
           </Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Modal Edit Video */}
+      <Modal
+        size="lg"
+        show={showEdit}
+        onHide={() => setShowEdit(false)}
+        aria-labelledby="example-modal-sizes-title-lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="example-modal-sizes-title-lg">
+            Large Modal
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="form-group">
+              <label htmlFor="judul">
+                Judul
+              </label>
+              <input onChange={(e) => setJudul(e.target.value)} value={judul} type="text" className="form-control" id="judul" placeholder="judul">
+              </input>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="keterangan">
+                Keterangan
+              </label>
+              <input onChange={(e) => setKeterangan(e.target.value)} value={keterangan} type="text" className="form-control" id="keterangan" placeholder="keterangan">
+              </input>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="link_tumbnail">
+                Link Thumbnail
+              </label>
+              <input onChange={(e) => setLinkTumbnail(e.target.value)} value={linkTumbnail} type="text" className="form-control" id="link_tumbnail" placeholder="Link Tumbnail">
+              </input>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="link_video">
+                Link Video
+              </label>
+              <input onChange={(e) => setLinkVideoUpload(e.target.value)} value={linkVideoUpload} type="text" className="form-control" id="link_video" placeholder="Link Video">
+              </input>
+            </div>
+
+            <button onClick={(e) => handleUpdateSimpan(e)} className="btn btn-primary">Simpan</button>
+          </form>
+        </Modal.Body>
       </Modal>
 
       <div class="jumbotron">
@@ -231,8 +362,11 @@ const ListVideo = () => {
                 <p class="card-text">
                   {data.keterangan}
                 </p>
-                <button onClick={() => handleShow()} class="btn btn-danger">
+                <button onClick={() => handleShow(data.id_konten)} class="btn btn-danger mr-3">
                   Delete
+                </button>
+                <button onClick={() => handleShowEdit(data)} class="btn btn-success">
+                  Edit
                 </button>
               </div>
             </div>
