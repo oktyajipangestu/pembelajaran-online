@@ -1,4 +1,35 @@
+import { useEffect, useState } from "react";
+
 const ListVideo = () => {
+
+  const [dataListVideo, setDataListVideo] = useState();
+
+  useEffect(() => {
+    getData();
+  },[]);
+
+  const getData = () => {
+    const token = localStorage.getItem("dataLoginAdmin");
+    const sendData = {
+      token,
+    };
+
+    fetch(`${process.env.REACT_APP_API}/listKonten`, {
+      method: "POST",
+      body: JSON.stringify(sendData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then(res => res.json())
+    .then(hasil => {
+      setDataListVideo(hasil.data);
+    })
+    .catch((err) => {
+      alert(err);
+    });
+  };
+
   return (
     <>
       <div class="jumbotron">
@@ -17,34 +48,24 @@ const ListVideo = () => {
         </a>
       </div>
 
-
-      <div className='row justify-content-center'>
-        <div class="card m-3 col-md-4 col-lg-3" style={{width: '18rem'}}>
-            <img src="..." class="card-img-top" alt="..." />
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+      <div className="row justify-content-center">
+        {dataListVideo.map((data,index) => {
+          return(
+            <div key={index} class="card m-3 col-md-4 col-lg-3" style={{ width: "18rem", height: 'auto' }}>
+              <img src={data.link_thumbnail} class="card-img-top" alt="..." />
+              <div class="card-body">
+                <h5 class="card-title">{data.judul}</h5>
+                <p class="card-text">
+                  {data.keterangan}
+                </p>
+                <a href="#" class="btn btn-primary">
+                  Go somewhere
+                </a>
+              </div>
             </div>
-        </div>
+          );
+        })}
 
-        <div class="card m-3 col-md-4 col-lg-3" style={{width: '18rem'}}>
-            <img src="..." class="card-img-top" alt="..." />
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
-
-        <div class="card m-3 col-md-4 col-lg-3" style={{width: '18rem'}}>
-            <img src="..." class="card-img-top" alt="..." />
-            <div class="card-body">
-                <h5 class="card-title">Card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-        </div>
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 
@@ -6,6 +6,14 @@ const Login = () => {
   const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+
+  useEffect(() => {
+    const login = localStorage.getItem("dataLoginAdmin");
+    if(login) {
+      history.push('/list-video-admin');
+    }
+  },[]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,7 +25,7 @@ const Login = () => {
     if (email === "" || password === "") {
       swal('Failed', 'Gagal Login', 'error');
     } else {
-      fetch(`${process.env.REACT_APP_API}loginAdmin`, {
+      fetch(`${process.env.REACT_APP_API}/loginAdmin`, {
         method: "POST",
         body: JSON.stringify(dataSend),
         headers: {
