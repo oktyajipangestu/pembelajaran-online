@@ -11,7 +11,7 @@ const LoginUser = () => {
   useEffect(() => {
     const login = localStorage.getItem("loginUser");
     if(login) {
-    //   history.push('/list-video-admin');
+      history.push('/list-video-user');
     }
   },[]);
 
@@ -35,10 +35,10 @@ const LoginUser = () => {
         .then((res) => res.json())
         .then((hasil) => {
             console.log(hasil)
-        //   if(hasil.status === 'berhasil') {
-        //     localStorage.setItem("loginUser", hasil.token);
-        //     history.push("/list-video-admin");
-        //   }
+            if(hasil.status === 'berhasil') {
+                localStorage.setItem("loginUser", hasil.token);
+                history.push("/list-video-user");
+            }
 
         })
         .catch((err) => {

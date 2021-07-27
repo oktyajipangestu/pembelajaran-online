@@ -133,7 +133,7 @@ const RegistrasiUser = () => {
                 </div>
 
                 <div className="form-group">
-                  {password !== konfirmPassword && password.length > 0 || konfirmPassword.length > 0 ? 
+                  {password !== konfirmPassword && (password.length > 0 || konfirmPassword.length > 0) ? 
                     <span style={{color:"red", fontSize:"14px"}}>password dan konfirm password harus sama</span> : ""  
                   }
                 </div>

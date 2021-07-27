@@ -4,6 +4,7 @@ import Login from './components/Login';
 import ListUsers from './components/ListUsers';
 import LoginUser from './components/AuthUser/LoginUser';
 import RegistrasiUser from './components/AuthUser/Registrasi';
+import PageListVideoUser from './components/PageListVideoUser';
 
 const Middleware = () => {
     return (
@@ -14,6 +15,7 @@ const Middleware = () => {
                 <Route exact path="/list-video-admin" render={() => <ListVideo />} />
                 <Route exact path="/list-users" render={() => <ListUsers />} />
                 <Route exact path="/registrasi-user" render={() => <RegistrasiUser />} />
+                <Route exact path="/list-video-user" render={() => <PageListVideoUser />} />
             </Switch>
         </Router>
     )
