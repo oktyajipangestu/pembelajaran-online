@@ -1,17 +1,19 @@
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import App from './App';
 import ListVideo from './components/ListVideo';
 import Login from './components/Login';
 import ListUsers from './components/ListUsers';
+import LoginUser from './components/AuthUser/LoginUser';
+import RegistrasiUser from './components/AuthUser/Registrasi';
 
 const Middleware = () => {
     return (
         <Router>
             <Switch>
-                <Route exact path="/" render={() => <App /> }/>
+                <Route exact path="/" render={() => <LoginUser /> }/>
                 <Route exact path="/login-admin" render={() => <Login />} />
                 <Route exact path="/list-video-admin" render={() => <ListVideo />} />
                 <Route exact path="/list-users" render={() => <ListUsers />} />
+                <Route exact path="/registrasi-user" render={() => <RegistrasiUser />} />
             </Switch>
         </Router>
     )
