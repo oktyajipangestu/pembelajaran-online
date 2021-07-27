@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import ReactPlayer from 'react-player';
 import swal from "sweetalert";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 
 const ListVideo = () => {
   const history = useHistory();
@@ -54,7 +54,12 @@ const ListVideo = () => {
     })
     .then(res => res.json())
     .then(hasil => {
-      setDataListVideo(hasil.data);
+      if(hasil.status === "berhasil") {
+        setDataListVideo(hasil.data);
+      } else {
+        history.push('/login-admin');
+        localStorage.removeItem("dataLoginAdmin");
+      }
       console.log(hasil.data);
     })
     .catch((err) => {
@@ -176,6 +181,11 @@ const ListVideo = () => {
       clearState();
       alert(err);
     });
+  }
+
+  const logOut = () => {
+    localStorage.removeItem('dataLoginAdmin');
+    history.push('/login-admin');
   }
 
 
@@ -337,7 +347,7 @@ const ListVideo = () => {
       </Modal>
 
       <div class="jumbotron">
-        <h1 class="display-4">Hello, world!</h1>
+        <h1 class="display-4">Aplikasi Pembelajaran</h1>
         <p class="lead">
           This is a simple hero unit, a simple jumbotron-style component for
           calling extra attention to featured content or information.
@@ -347,13 +357,19 @@ const ListVideo = () => {
           It uses utility classes for typography and spacing to space content
           out within the larger container.
         </p>
-        <button class="btn btn-primary btn-lg" onClick={() => setLgShow(true)} role="button">
+        <button class="btn btn-primary btn-lg mr-3" onClick={() => setLgShow(true)} role="button">
           + Tambah Video
+        </button>
+        <Link class="btn btn-success btn-lg"  role="button" to="/list-users">
+          User
+        </Link>
+        <button class="btn btn-danger btn-lg ml-3" onClick={() => logOut()} role="button">
+          Logout
         </button>
       </div>
 
       <div className="row justify-content-center">
-        {dataListVideo.map((data,index) => {
+        {dataListVideo?dataListVideo.map((data,index) => {
           return(
             <div key={index} class="card m-3 col-md-4 col-lg-3" style={{ width: "18rem", height: 'auto', border:'none' }}>
               <img src={data.link_thumbnail} onClick={() => handleOpenVideo(data) } class="card-img-top" alt="..." />
@@ -371,7 +387,7 @@ const ListVideo = () => {
               </div>
             </div>
           );
-        })}
+        }): ""}
 
       </div>
     </>
