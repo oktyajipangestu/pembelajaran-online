@@ -8,6 +8,41 @@ const PageListVideoUser = () => {
   const [dataListVideo, setDataListVideo] = useState([]);
   const [handleShowVideo, setHandleShowVideo] = useState(false);
   const [linkVideo, setLinkVideo] = useState('');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+      const token = localStorage.getItem('loginUser');
+
+      if(!token) {
+        history.replace('/')
+        return
+      }
+
+      const dataSend = {
+          cari: search,
+          token
+      }
+
+      fetch(`${process.env.REACT_APP_API}/listKontenPeserta`, {
+        method: "POST",
+        body: JSON.stringify(dataSend),
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+      .then(res => res.json())
+      .then(hasil => {
+          if(hasil.status === "gagal") {
+              localStorage.removeItem('loginUser');
+              history.replace('/');
+              return
+          }
+          setDataListVideo(hasil.data);
+      })
+      .catch(err => {
+          alert(err)
+      })
+  }, [])
   
   const handleClose = () => {
     setHandleShowVideo(false);
@@ -17,6 +52,7 @@ const PageListVideoUser = () => {
     const login = localStorage.getItem('loginUser');
     if(!login){
       history.push('/');
+      return
     }
     getData();
   }, []);
@@ -41,8 +77,8 @@ const PageListVideoUser = () => {
       } else {
         history.push('/l');
         localStorage.removeItem("loginUser");
+        return
       }
-      console.log(hasil.data);
     })
     .catch((err) => {
       alert(err);
@@ -109,12 +145,12 @@ const PageListVideoUser = () => {
           It uses utility classes for typography and spacing to space content
           out within the larger container.
         </p>
-        <Link class="btn btn-success btn-lg"  role="button" to="/list-users">
-          User
-        </Link>
         <button class="btn btn-danger btn-lg ml-3" onClick={() => logOut()} role="button">
           Logout
         </button>
+        <form className="form-inline">
+            <input style={{marginLeft:"auto"}} onChange={(e) => setSearch(e.target.value)} value={search} className="mr-sm-2" type="search" placeholder="search"/>
+        </form>
       </div>
 
       <div className="row justify-content-center">

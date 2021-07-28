@@ -5,6 +5,8 @@ import ListUsers from './components/ListUsers';
 import LoginUser from './components/AuthUser/LoginUser';
 import RegistrasiUser from './components/AuthUser/Registrasi';
 import PageListVideoUser from './components/PageListVideoUser';
+import SoalQuiz from './components/SoalQuiz';
+import Skor from './components/Skor/Skor';
 
 const Middleware = () => {
     return (
@@ -16,6 +18,8 @@ const Middleware = () => {
                 <Route exact path="/list-users" render={() => <ListUsers />} />
                 <Route exact path="/registrasi-user" render={() => <RegistrasiUser />} />
                 <Route exact path="/list-video-user" render={() => <PageListVideoUser />} />
+                <Route exact path="/quiz" render={() => <SoalQuiz />} />
+                <Route exact path="/skor" render={() => <Skor />} />
             </Switch>
         </Router>
     )
